@@ -5,7 +5,7 @@ One consistent API for Ghanaian SMS providers. Swap providers by changing one co
 ## Install
 
 ```bash
-composer require yourname/ghana-sms
+composer require cyberxgh/ghana-sms
 ```
 
 ## Laravel
