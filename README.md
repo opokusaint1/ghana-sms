@@ -2,6 +2,8 @@
 
 One consistent API for Ghanaian SMS providers. Swap providers by changing one config value.
 
+> Note: the mNotify driver is unit-tested but not yet verified against the live API.
+
 ## Install
 
 ```bash
