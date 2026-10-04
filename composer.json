@@ -1,0 +1,28 @@
+{
+    "name": "yourname/ghana-sms",
+    "description": "Unified SMS interface for Ghanaian providers (Arkesel, mNotify, Hubtel) for PHP and Laravel.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["sms", "ghana", "arkesel", "mnotify", "hubtel", "laravel"],
+    "require": {
+        "php": "^8.1",
+        "guzzlehttp/guzzle": "^7.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": { "GhanaSms\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "GhanaSms\\Tests\\": "tests/" }
+    },
+    "extra": {
+        "laravel": {
+            "providers": ["GhanaSms\\Laravel\\SmsServiceProvider"],
+            "aliases": { "Sms": "GhanaSms\\Laravel\\Facades\\Sms" }
+        }
+    },
+    "minimum-stability": "stable",
+    "scripts": { "test": "phpunit" }
+}
