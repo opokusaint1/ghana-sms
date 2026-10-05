@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace GhanaSms\Laravel;
 
+use GhanaSms\Laravel\Channels\SmsChannel;
 use GhanaSms\SmsManager;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\ServiceProvider;
 
 class SmsServiceProvider extends ServiceProvider
@@ -22,5 +24,10 @@ class SmsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../../config/sms.php' => config_path('sms.php'),
         ], 'sms-config');
+
+        // Lets notifications use 'sms' in via(): return ['sms'];
+        Notification::resolved(function ($service): void {
+            $service->extend('sms', fn ($app) => $app->make(SmsChannel::class));
+        });
     }
 }

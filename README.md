@@ -99,16 +99,55 @@ try {
 }
 ```
 
+## Laravel notifications
+
+Use SMS as a notification channel:
+
+```php
+use GhanaSms\Laravel\Messages\SmsMessage;
+use Illuminate\Notifications\Notification;
+
+class OrderShipped extends Notification
+{
+    public function via($notifiable): array
+    {
+        return ['sms'];
+    }
+
+    public function toSms($notifiable): SmsMessage|string
+    {
+        return SmsMessage::create("Your order #{$this->order->id} has shipped")
+            ->from('MyShop');          // optional
+            // ->driver('mnotify');    // optional: pick a provider per message
+    }
+}
+```
+
+Tell Laravel which number to use on your notifiable model (usually `User`):
+
+```php
+public function routeNotificationForSms($notification = null): ?string
+{
+    return $this->phone;
+}
+```
+
+```php
+$user->notify(new OrderShipped($order));
+```
+
+Failures throw typed exceptions (for example `InsufficientBalanceException`), so queued notifications are retried or marked failed rather than silently lost. If the model has no phone number, the notification is skipped.
+
 ## Roadmap
 - [x] Arkesel
 - [x] mNotify
 - [x] Bulk sending, typed errors
 - [x] Hubtel
 - [ ] Delivery reports
-- [ ] Laravel notification channel
+- [x] Laravel notification channel
 - [ ] WordPress adapter
 
 ## Testing
 ```bash
 composer install && composer test
-
+```
