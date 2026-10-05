@@ -43,6 +43,20 @@ final class SmsManager
         return $this->driver()->send(new Message($to, $body, $senderId));
     }
 
+    /**
+     * @param Message[] $messages
+     * @return SmsResponse[] same order as the input
+     */
+    public function sendBulk(array $messages): array
+    {
+        return $this->driver()->sendBulk($messages);
+    }
+
+    public function balance(): ?float
+    {
+        return $this->driver()->balance();
+    }
+
     private function build(string $name): SmsDriver
     {
         $cfg = $this->config['drivers'][$name] ?? throw new SmsException("SMS driver [{$name}] is not configured.");

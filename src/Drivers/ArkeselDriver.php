@@ -4,56 +4,47 @@ declare(strict_types=1);
 
 namespace GhanaSms\Drivers;
 
-use GhanaSms\Contracts\SmsDriver;
-use GhanaSms\DTO\Message;
 use GhanaSms\DTO\SmsResponse;
 use GhanaSms\Exceptions\SmsException;
-use GhanaSms\Support\PhoneNormalizer;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 
 /**
- * NOTE: verify endpoints and response shapes against Arkesel's current docs
- * before releasing. They may change.
+ * Verified live: send. Check Arkesel's docs for batch limits and balance format.
  */
-final class ArkeselDriver implements SmsDriver
+final class ArkeselDriver extends BaseDriver
 {
     private const BASE_URL = 'https://sms.arkesel.com/api/v2/';
 
-    public function __construct(
-        private readonly ClientInterface $http,
-        private readonly string $apiKey,
-        private readonly ?string $defaultSender = null,
-    ) {
+    protected function providerName(): string
+    {
+        return 'Arkesel';
     }
 
-    public function send(Message $message): SmsResponse
+    protected function dispatch(string $sender, string $body, array $recipients): array
     {
-        $sender = $message->senderId ?? $this->defaultSender;
-        if ($sender === null) {
-            throw new SmsException('Arkesel requires a sender ID.');
-        }
-
         $json = $this->request('POST', 'sms/send', [
             'sender'     => $sender,
-            'message'    => $message->body,
-            'recipients' => [PhoneNormalizer::normalize($message->to)],
+            'message'    => $body,
+            'recipients' => $recipients,
         ]);
 
-        $ok = ($json['status'] ?? null) === 'success';
+        if (($json['status'] ?? null) === 'success') {
+            $ids = [];
+            foreach ($json['data'] ?? [] as $row) {
+                if (isset($row['recipient'], $row['id'])) {
+                    $ids[(string) $row['recipient']] = (string) $row['id'];
+                }
+            }
 
-        return new SmsResponse(
-            success: $ok,
-            messageId: isset($json['data'][0]['id']) ? (string) $json['data'][0]['id'] : null,
-            error: $ok ? null : (string) ($json['message'] ?? 'Unknown error'),
-            raw: $json,
-        );
-    }
+            return array_map(
+                fn (string $to) => new SmsResponse(true, $ids[$to] ?? null, null, null, $json),
+                $recipients
+            );
+        }
 
-    public function sendBulk(array $messages): array
-    {
-        // Simple v1: one request per message. Optimize later with Arkesel's bulk endpoint.
-        return array_map(fn (Message $m) => $this->send($m), $messages);
+        $failure = SmsResponse::failure((string) ($json['message'] ?? $json['error'] ?? 'Unknown error'), null, $json);
+
+        return array_fill(0, count($recipients), $failure);
     }
 
     public function balance(): ?float
@@ -61,7 +52,7 @@ final class ArkeselDriver implements SmsDriver
         $json = $this->request('GET', 'clients/balance-details');
 
         // TODO: confirm the exact key in Arkesel's docs.
-        $value = $json['data']['sms_balance'] ?? $json['data']['balance'] ?? null;
+        $value = $json['data']['sms_balance'] ?? $json['data']['balance'] ?? $json['sms_balance'] ?? null;
 
         return $value !== null ? (float) $value : null;
     }
