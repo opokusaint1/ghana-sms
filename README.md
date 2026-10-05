@@ -6,7 +6,7 @@ One consistent API for Ghanaian SMS providers. Swap providers by changing one co
 |----------|--------|
 | Arkesel  | Verified live (send) |
 | mNotify  | Unit-tested, not yet verified against the live API |
-| Hubtel   | Planned |
+| Hubtel   | Unit-tested, not yet verified against the live API |
 
 ## Install
 
@@ -31,6 +31,12 @@ ARKESEL_SENDER=MyApp
 SMS_DRIVER=mnotify
 MNOTIFY_API_KEY=your-key
 MNOTIFY_SENDER=MyApp
+
+# or
+SMS_DRIVER=hubtel
+HUBTEL_CLIENT_ID=your-client-id
+HUBTEL_CLIENT_SECRET=your-client-secret
+HUBTEL_SENDER=MyApp
 ```
 
 ```php
@@ -97,7 +103,7 @@ try {
 - [x] Arkesel
 - [x] mNotify
 - [x] Bulk sending, typed errors
-- [ ] Hubtel
+- [x] Hubtel
 - [ ] Delivery reports
 - [ ] Laravel notification channel
 - [ ] WordPress adapter
@@ -105,4 +111,4 @@ try {
 ## Testing
 ```bash
 composer install && composer test
-```
+

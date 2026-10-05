@@ -12,6 +12,11 @@ return [
             'api_key' => env('MNOTIFY_API_KEY'),
             'sender'  => env('MNOTIFY_SENDER'),
         ],
-        // 'hubtel'  => [...],   // coming soon
+        'hubtel' => [
+            'client_id'     => env('HUBTEL_CLIENT_ID'),
+            'client_secret' => env('HUBTEL_CLIENT_SECRET'),
+            'sender'        => env('HUBTEL_SENDER'),
+            // 'base_url'   => env('HUBTEL_BASE_URL'), // override if Hubtel changes the host
+        ],
     ],
 ];

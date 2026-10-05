@@ -7,6 +7,7 @@ namespace GhanaSms;
 use Closure;
 use GhanaSms\Contracts\SmsDriver;
 use GhanaSms\Drivers\ArkeselDriver;
+use GhanaSms\Drivers\HubtelDriver;
 use GhanaSms\Drivers\MnotifyDriver;
 use GhanaSms\DTO\Message;
 use GhanaSms\DTO\SmsResponse;
@@ -68,6 +69,13 @@ final class SmsManager
         return match ($name) {
             'arkesel' => new ArkeselDriver(new Client(), $cfg['api_key'] ?? '', $cfg['sender'] ?? null),
             'mnotify' => new MnotifyDriver(new Client(), $cfg['api_key'] ?? '', $cfg['sender'] ?? null),
+            'hubtel'  => new HubtelDriver(
+                new Client(),
+                $cfg['client_id'] ?? '',
+                $cfg['client_secret'] ?? '',
+                $cfg['sender'] ?? null,
+                $cfg['base_url'] ?? HubtelDriver::DEFAULT_BASE_URL,
+            ),
             default   => throw new SmsException("SMS driver [{$name}] is not supported."),
         };
     }
