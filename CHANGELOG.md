@@ -1,6 +1,7 @@
 # Changelog
 
 ## 0.2.0
+- Allow Guzzle 8 (Laravel 12+ apps ship with it).
 - Real bulk sending: messages with the same body and sender go out in one request per provider (chunked at 100 recipients).
 - Typed errors: `SmsResponse::$errorType` (`ErrorType` enum) and `throwIfFailed()` with `AuthenticationFailedException`, `InsufficientBalanceException`, `InvalidSenderException`.
 - `BaseDriver` extracts shared logic, so new providers need far less code.
